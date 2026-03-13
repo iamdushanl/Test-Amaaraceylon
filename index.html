@@ -4,18 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amaara Cafe and Restaurant</title>
-    <meta name="description" content="Amaara Cafe and Restaurant - A modern luxury dining experience. Where every bite tells a story.">
+    <meta name="description" content="Amaara Cafe and Restaurant - A modern luxury dining experience where every bite tells a story.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-    <!-- NAVBAR -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
-            <a href="#" class="nav-logo">Amaara</a>
+            <a href="#hero" class="nav-logo">Amaara</a>
             <ul class="nav-links">
                 <li><a href="#menu">Menu</a></li>
                 <li><a href="#about">Our Story</a></li>
@@ -24,153 +22,199 @@
         </div>
     </nav>
 
-    <!-- HERO -->
-    <section class="hero" id="hero">
-        <div class="hero-bg">
+    <header class="hero" id="hero">
+        <div class="hero-bg" id="heroParallax" aria-hidden="true">
             <canvas id="hero-canvas"></canvas>
-            <div class="overlay"></div>
+            <div class="hero-noise"></div>
+            <div class="hero-overlay"></div>
         </div>
-        <div class="hero-content fade-in-stagger">
-            <h1 class="hero-title reveal-text">Where Every Bite<br>Tells a Story</h1>
-            <p class="hero-subtitle reveal-text">A Michelin-star experience</p>
+        <div class="hero-content">
+            <p class="eyebrow reveal-text">Amaara Cafe and Restaurant</p>
+            <h1 class="hero-title reveal-text">Where Every Bite Tells a Story</h1>
+            <p class="hero-subtitle reveal-text">A moody, Michelin-star inspired evening of precision, aroma, and artistry.</p>
             <div class="hero-buttons reveal-text">
                 <a href="#reservations" class="btn btn-primary">Reserve a Table</a>
                 <a href="#menu" class="btn btn-outline">View Menu</a>
             </div>
         </div>
-    </section>
+        <a class="scroll-cue" href="#about" aria-label="Scroll to Our Story">Scroll</a>
+    </header>
 
-    <!-- ABOUT / OUR STORY -->
-    <section class="about section-padding" id="about">
-        <div class="container dual-layout">
-            <div class="about-image fade-in scroll-observe">
-                <img src="images/ezgif-frame-100.jpg" alt="Amaara Interior Atmospheric View">
-            </div>
-            <div class="about-content fade-in scroll-observe">
-                <h2 class="section-title">Our Story</h2>
-                <div class="gold-divider"></div>
-                <p>Welcome to Amaara, where culinary craftsmanship meets moody elegance. Born from a passion for perfection, our philosophy is simple: source only the finest ingredients and transform them into unforgettable experiences.</p>
-                <p>We blend traditional techniques with avant-garde presentations to awaken the senses and comfort the soul. Every detail, from the ambient lighting to the curated textures of our dining room, is designed to transport you to a world of absolute luxury.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- MENU -->
-    <section class="menu section-padding" id="menu">
-        <div class="container">
-            <h2 class="section-title text-center fade-in scroll-observe">Exclusive Menu</h2>
-            <div class="gold-divider center"></div>
-            
-            <div class="menu-categories mt-12">
-                <!-- Starters -->
-                <div class="menu-category fade-in scroll-observe">
-                    <h3 class="category-title">Starters</h3>
-                    <div class="menu-items">
-                        <div class="menu-card">
-                            <div class="menu-header">
-                                <h4 class="item-name">Truffle & Forest Mushroom Consommé</h4>
-                                <span class="item-price">$32</span>
-                            </div>
-                            <p class="item-desc">Wild foraged mushrooms, black truffle shavings, gold leaf.</p>
-                        </div>
-                        <div class="menu-card">
-                            <div class="menu-header">
-                                <h4 class="item-name">Wagyu Beef Carpaccio</h4>
-                                <span class="item-price">$45</span>
-                            </div>
-                            <p class="item-desc">A5 Wagyu, caper dust, quail egg, aged parmesan crisp.</p>
-                        </div>
-                    </div>
+    <main>
+        <section class="about section" id="about">
+            <div class="container split-layout">
+                <div class="about-image scroll-observe" data-delay="0.1s">
+                    <img src="images/ezgif-frame-100.jpg" alt="Atmospheric interior of Amaara Cafe and Restaurant">
                 </div>
-
-                <!-- Mains -->
-                <div class="menu-category fade-in scroll-observe">
-                    <h3 class="category-title">Mains</h3>
-                    <div class="menu-items">
-                        <div class="menu-card">
-                            <div class="menu-header">
-                                <h4 class="item-name">Pan-Seared Chilean Sea Bass</h4>
-                                <span class="item-price">$68</span>
-                            </div>
-                            <p class="item-desc">Saffron beurre blanc, squid ink risotto, micro-greens.</p>
-                        </div>
-                        <div class="menu-card">
-                            <div class="menu-header">
-                                <h4 class="item-name">Dry-Aged Tomahawk (For Two)</h4>
-                                <span class="item-price">$185</span>
-                            </div>
-                            <p class="item-desc">45-day dry-aged, smoked sea salt, marrow butter, pomme purée.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Desserts -->
-                <div class="menu-category fade-in scroll-observe">
-                    <h3 class="category-title">Desserts</h3>
-                    <div class="menu-items">
-                        <div class="menu-card">
-                            <div class="menu-header">
-                                <h4 class="item-name">Dark Chocolate Marquise</h4>
-                                <span class="item-price">$28</span>
-                            </div>
-                            <p class="item-desc">Valrhona 70%, hazelnut praline, edible 24k gold.</p>
-                        </div>
-                        <div class="menu-card">
-                            <div class="menu-header">
-                                <h4 class="item-name">Madagascar Vanilla Soufflé</h4>
-                                <span class="item-price">$25</span>
-                            </div>
-                            <p class="item-desc">Grand Marnier anglaise, raspberry coulis.</p>
-                        </div>
-                    </div>
+                <div class="about-content scroll-observe" data-delay="0.25s">
+                    <p class="eyebrow">Our Story</p>
+                    <h2 class="section-title">Crafted in Fire. Served with Grace.</h2>
+                    <div class="gold-divider"></div>
+                    <p>
+                        Amaara was born from a shared obsession: to turn dinner into ceremony. In our kitchen, slow reductions,
+                        open flame, and hand-finished sauces are treated with the same reverence as fine art.
+                    </p>
+                    <p>
+                        Every course is built from deliberate sourcing, seasonal intuition, and exacting technique. From the first pour to
+                        the final spoon, our philosophy is clear: beauty matters, balance matters, and every bite should linger.
+                    </p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- RESERVATIONS -->
-    <section class="reservations section-padding" id="reservations">
-        <div class="container fade-in scroll-observe">
-            <div class="reservation-box">
-                <h2 class="section-title text-center">Reserve Your Evening</h2>
-                <div class="gold-divider center"></div>
-                <form class="reservation-form" id="resForm">
-                    <div class="form-group">
-                        <input type="text" id="name" required placeholder="Full Name">
-                    </div>
-                    <div class="form-group">
-                        <input type="email" id="email" required placeholder="Email Address">
-                    </div>
-                    <div class="form-group row">
-                        <input type="date" id="date" required>
-                        <input type="time" id="time" required>
-                    </div>
-                    <div class="form-group">
-                        <select id="guests" required>
-                            <option value="" disabled selected>Number of Guests</option>
-                            <option value="1">1 Person</option>
-                            <option value="2">2 People</option>
-                            <option value="3">3 People</option>
-                            <option value="4">4 People</option>
-                            <option value="5">5+ People</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary submit-btn">Confirm Reservation</button>
-                </form>
+        <section class="menu section" id="menu">
+            <div class="container">
+                <div class="section-head scroll-observe">
+                    <p class="eyebrow">Signature Selection</p>
+                    <h2 class="section-title">The Amaara Menu</h2>
+                    <div class="gold-divider center"></div>
+                </div>
+
+                <div class="menu-columns">
+                    <article class="menu-category scroll-observe" data-delay="0.1s">
+                        <h3 class="category-title">Starters</h3>
+                        <div class="menu-card">
+                            <div class="menu-header">
+                                <h4>Truffle Mushroom Consomme</h4>
+                                <span>$32</span>
+                            </div>
+                            <p>Forest mushrooms, black truffle essence, aged parmesan foam.</p>
+                        </div>
+                        <div class="menu-card">
+                            <div class="menu-header">
+                                <h4>Wagyu Carpaccio</h4>
+                                <span>$45</span>
+                            </div>
+                            <p>A5 wagyu, caper dust, mustard seed pearls, citrus oil.</p>
+                        </div>
+                        <div class="menu-card">
+                            <div class="menu-header">
+                                <h4>Charred Octopus</h4>
+                                <span>$38</span>
+                            </div>
+                            <p>Smoked paprika glaze, fennel ash, saffron aioli.</p>
+                        </div>
+                    </article>
+
+                    <article class="menu-category scroll-observe" data-delay="0.2s">
+                        <h3 class="category-title">Mains</h3>
+                        <div class="menu-card">
+                            <div class="menu-header">
+                                <h4>Chilean Sea Bass</h4>
+                                <span>$68</span>
+                            </div>
+                            <p>Saffron beurre blanc, squid ink risotto, lemon zest caviar.</p>
+                        </div>
+                        <div class="menu-card">
+                            <div class="menu-header">
+                                <h4>Dry-Aged Tomahawk</h4>
+                                <span>$185</span>
+                            </div>
+                            <p>45-day dry age, marrow butter, smoked sea salt, pomme puree.</p>
+                        </div>
+                        <div class="menu-card">
+                            <div class="menu-header">
+                                <h4>Duck a l'Orange Noir</h4>
+                                <span>$74</span>
+                            </div>
+                            <p>Crisp skin duck breast, bitter orange jus, roasted shallot silk.</p>
+                        </div>
+                    </article>
+
+                    <article class="menu-category scroll-observe" data-delay="0.3s">
+                        <h3 class="category-title">Desserts</h3>
+                        <div class="menu-card">
+                            <div class="menu-header">
+                                <h4>Dark Chocolate Marquise</h4>
+                                <span>$28</span>
+                            </div>
+                            <p>Valrhona 70%, praline crunch, espresso caramel threads.</p>
+                        </div>
+                        <div class="menu-card">
+                            <div class="menu-header">
+                                <h4>Vanilla Souffle</h4>
+                                <span>$25</span>
+                            </div>
+                            <p>Madagascar vanilla, Grand Marnier creme anglaise.</p>
+                        </div>
+                        <div class="menu-card">
+                            <div class="menu-header">
+                                <h4>Pistachio Rose Tarte</h4>
+                                <span>$24</span>
+                            </div>
+                            <p>Rosewater ganache, pistachio praline, candied citrus peel.</p>
+                        </div>
+                    </article>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- FOOTER -->
+        <section class="reservations section" id="reservations">
+            <div class="container">
+                <div class="reservation-shell scroll-observe">
+                    <p class="eyebrow">Reservations</p>
+                    <h2 class="section-title">Reserve Your Evening</h2>
+                    <div class="gold-divider center"></div>
+
+                    <form class="reservation-form" id="resForm">
+                        <div class="form-row">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" placeholder="Full Name" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" placeholder="Email Address" required>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-row">
+                                <label for="date">Date</label>
+                                <input type="date" id="date" name="date" required>
+                            </div>
+                            <div class="form-row">
+                                <label for="time">Time</label>
+                                <input type="time" id="time" name="time" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label for="guests">Number of Guests</label>
+                            <select id="guests" name="guests" required>
+                                <option value="" disabled selected>Select Guests</option>
+                                <option value="1">1 Guest</option>
+                                <option value="2">2 Guests</option>
+                                <option value="3">3 Guests</option>
+                                <option value="4">4 Guests</option>
+                                <option value="5">5 Guests</option>
+                                <option value="6+">6+ Guests</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary submit-btn" type="submit">Confirm Reservation</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
     <footer class="footer">
-        <div class="container text-center">
+        <div class="container footer-content">
             <h2 class="footer-logo">Amaara</h2>
-            <div class="social-links">
-                <a href="#">Instagram</a>
-                <a href="#">Facebook</a>
-                <a href="#">Twitter</a>
+            <div class="social-links" aria-label="Amaara social media links">
+                <a href="#" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                        <path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9Zm10.75 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"></path>
+                    </svg>
+                </a>
+                <a href="#" aria-label="Facebook">
+                    <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                        <path d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.6 1.6-1.6h1.7V4.8c-.3 0-1.4-.1-2.6-.1-2.6 0-4.3 1.6-4.3 4.5V11H7.9v3h2.6v8h3Z"></path>
+                    </svg>
+                </a>
+                <a href="#" aria-label="X">
+                    <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                        <path d="m18.3 3.5 2.2.1-4.8 5.5L21 20.5h-4.3l-3.4-4.8-4.2 4.8H6.9l5.2-5.9L3 3.5h4.4l3 4.3 3.9-4.3Zm-1.5 15.3h1.6L7.2 5.1H5.5l11.3 13.7Z"></path>
+                    </svg>
+                </a>
             </div>
-            <p class="copyright">&copy; <span id="year"></span> Amaara Cafe and Restaurant. All Rights Reserved.</p>
+            <p class="copyright">&copy; <span id="year"></span> Amaara Cafe and Restaurant. All rights reserved.</p>
         </div>
     </footer>
 
