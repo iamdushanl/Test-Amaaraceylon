@@ -1,151 +1,234 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-    /* ==============================
-       STICKY NAVBAR
-    ============================== */
     const navbar = document.getElementById('navbar');
-    
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
+    const heroParallax = document.getElementById('heroParallax');
 
-    /* ==============================
-       CANVAS IMAGE SEQUENCE (Hero Background)
-    ============================== */
-    const canvas = document.getElementById('hero-canvas');
-    if (canvas) {
+    const updateNavbar = () => {
+        if (!navbar) {
+            return;
+        }
+
+        navbar.classList.toggle('scrolled', window.scrollY > 40);
+    };
+
+    const smoothAnchorScroll = () => {
+        const links = document.querySelectorAll('a[href^="#"]');
+
+        links.forEach((link) => {
+            link.addEventListener('click', (event) => {
+                const href = link.getAttribute('href');
+
+                if (!href || href === '#') {
+                    return;
+                }
+
+                const target = document.querySelector(href);
+                if (!target) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                const navOffset = navbar ? navbar.offsetHeight : 0;
+                const targetPosition = target.getBoundingClientRect().top + window.scrollY - navOffset + 8;
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    };
+
+    const setupHeroSequence = () => {
+        const canvas = document.getElementById('hero-canvas');
+        if (!canvas) {
+            return null;
+        }
+
         const context = canvas.getContext('2d');
         const frameCount = 232;
-        
-        // Define canvas sizing based on window
-        const setupCanvas = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        };
-        setupCanvas();
-        window.addEventListener('resize', setupCanvas);
+        const images = new Array(frameCount);
+        let currentFrame = 0;
+        let pendingFrame = 0;
+        let ticking = false;
 
-        // Preload images
-        const images = [];
-        let imagesLoaded = 0;
-        
-        for (let i = 1; i <= frameCount; i++) {
-            const img = new Image();
-            // Pads the number with leading zeros (e.g., 001, 010, 100)
-            const paddedIndex = i.toString().padStart(3, '0');
-            img.src = `images/ezgif-frame-${paddedIndex}.jpg`;
-            
-            img.onload = () => {
-                imagesLoaded++;
-                // Draw first frame once loaded
-                if (imagesLoaded === 1) {
-                    renderFrame(0);
-                }
-            };
-            images.push({ loaded: false, img: img });
-            img.addEventListener('load', () => { images[i-1].loaded = true; });
+        const setCanvasSize = () => {
+            const ratio = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = Math.floor(window.innerWidth * ratio);
+            canvas.height = Math.floor(window.innerHeight * ratio);
+            canvas.style.width = `${window.innerWidth}px`;
+            canvas.style.height = `${window.innerHeight}px`;
+            context.setTransform(ratio, 0, 0, ratio, 0, 0);
+            drawFrame(currentFrame);
+        };
+
+        const drawFrame = (index) => {
+            const image = images[index];
+            if (!image || !image.complete || image.naturalWidth === 0) {
+                return;
+            }
+
+            const canvasWidth = window.innerWidth;
+            const canvasHeight = window.innerHeight;
+            const canvasRatio = canvasWidth / canvasHeight;
+            const imageRatio = image.naturalWidth / image.naturalHeight;
+
+            let width = canvasWidth;
+            let height = canvasHeight;
+            let x = 0;
+            let y = 0;
+
+            if (canvasRatio > imageRatio) {
+                height = width / imageRatio;
+                y = (canvasHeight - height) * 0.5;
+            } else {
+                width = height * imageRatio;
+                x = (canvasWidth - width) * 0.5;
+            }
+
+            context.clearRect(0, 0, canvasWidth, canvasHeight);
+            context.drawImage(image, x, y, width, height);
+            currentFrame = index;
+        };
+
+        const preloadFrames = () => {
+            for (let i = 0; i < frameCount; i++) {
+                const frame = new Image();
+                const frameLabel = String(i + 1).padStart(3, '0');
+                frame.src = `images/ezgif-frame-${frameLabel}.jpg`;
+                frame.loading = 'eager';
+
+                frame.addEventListener('load', () => {
+                    if (i === 0) {
+                        drawFrame(0);
+                    }
+
+                    if (i === pendingFrame) {
+                        drawFrame(pendingFrame);
+                    }
+                });
+
+                images[i] = frame;
+            }
+        };
+
+        const updateFrameByScroll = () => {
+            const maxScroll = window.innerHeight * 1.4;
+            const fraction = Math.min(window.scrollY / maxScroll, 1);
+            pendingFrame = Math.round(fraction * (frameCount - 1));
+            drawFrame(pendingFrame);
+        };
+
+        const updateParallax = () => {
+            if (!heroParallax) {
+                return;
+            }
+
+            const offset = Math.min(window.scrollY * 0.17, window.innerHeight * 0.24);
+            heroParallax.style.transform = `translate3d(0, ${offset}px, 0) scale(1.06)`;
+        };
+
+        const onScroll = () => {
+            if (ticking) {
+                return;
+            }
+
+            ticking = true;
+            requestAnimationFrame(() => {
+                updateNavbar();
+                updateFrameByScroll();
+                updateParallax();
+                ticking = false;
+            });
+        };
+
+        preloadFrames();
+        setCanvasSize();
+        updateFrameByScroll();
+        updateParallax();
+
+        window.addEventListener('resize', () => {
+            setCanvasSize();
+            updateFrameByScroll();
+        });
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+
+        return {
+            refresh: () => {
+                setCanvasSize();
+                updateFrameByScroll();
+                updateParallax();
+            }
+        };
+    };
+
+    const setupRevealOnScroll = () => {
+        const revealElements = document.querySelectorAll('.scroll-observe');
+        if (!revealElements.length) {
+            return;
         }
 
-        const renderFrame = (index) => {
-            if (images[index] && images[index].loaded) {
-                // Calculate scale to "cover" the canvas (like object-fit: cover)
-                const img = images[index].img;
-                const canvasRatio = canvas.width / canvas.height;
-                const imgRatio = img.width / img.height;
-                
-                let drawWidth, drawHeight, offsetX, offsetY;
-                
-                if (canvasRatio > imgRatio) {
-                    drawWidth = canvas.width;
-                    drawHeight = canvas.width / imgRatio;
-                    offsetX = 0;
-                    offsetY = (canvas.height - drawHeight) / 2;
-                } else {
-                    drawWidth = canvas.height * imgRatio;
-                    drawHeight = canvas.height;
-                    offsetX = (canvas.width - drawWidth) / 2;
-                    offsetY = 0;
-                }
-                
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                context.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        revealElements.forEach((element) => {
+            const delay = element.getAttribute('data-delay');
+            if (delay) {
+                element.style.setProperty('--delay', delay);
             }
-        };
-
-        window.addEventListener('scroll', () => {
-            const scrollTop = document.documentElement.scrollTop;
-            // The max scroll required to reach the last frame (e.g., 1.5 * windowHeight)
-            const maxScrollTop = window.innerHeight * 1.5; 
-            
-            // Map scroll fraction to frame index
-            const scrollFraction = Math.min(scrollTop / maxScrollTop, 1);
-            const frameIndex = Math.floor(scrollFraction * (frameCount - 1));
-            
-            requestAnimationFrame(() => renderFrame(frameIndex));
         });
-    }
 
-    /* ==============================
-       FADE-IN ON SCROLL (IntersectionObserver)
-    ============================== */
-    const scrollElements = document.querySelectorAll('.scroll-observe');
+        const observer = new IntersectionObserver(
+            (entries, obs) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
 
-    const elementInView = (el, dividend = 1) => {
-        const elementTop = el.getBoundingClientRect().top;
-        return (elementTop <= (window.innerHeight || document.documentElement.clientHeight) / dividend);
-    };
-
-    const displayScrollElement = (element) => {
-        element.classList.add('visible');
-    };
-
-    const handleScrollAnimation = () => {
-        scrollElements.forEach((el) => {
-            if (elementInView(el, 1.15)) {
-                displayScrollElement(el);
+                    entry.target.classList.add('visible');
+                    obs.unobserve(entry.target);
+                });
+            },
+            {
+                root: null,
+                threshold: 0.2,
+                rootMargin: '0px 0px -8% 0px'
             }
-        })
-    }
+        );
 
-    // Debounce/throttle optional for performance, but modern browsers handle this well enough for lightweight pages
-    window.addEventListener('scroll', () => {
-        handleScrollAnimation();
-    });
-    
-    // Trigger once on load
-    handleScrollAnimation();
+        revealElements.forEach((element) => observer.observe(element));
+    };
 
-    /* ==============================
-       SET CURRENT YEAR IN FOOTER
-    ============================== */
-    document.getElementById('year').textContent = new Date().getFullYear();
+    const setupForm = () => {
+        const form = document.getElementById('resForm');
+        if (!form) {
+            return;
+        }
 
-    /* ==============================
-       FORM SUBMISSION PREVENT DEFAULT
-    ============================== */
-    const form = document.getElementById('resForm');
-    if(form) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const btn = form.querySelector('.submit-btn');
-            const originalText = btn.textContent;
-            
-            btn.textContent = "Reservation Request Sent...";
-            btn.style.backgroundColor = "transparent";
-            btn.style.color = "var(--accent)";
-            
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const submitButton = form.querySelector('.submit-btn');
+            const defaultLabel = submitButton.textContent;
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Request Sent';
+
             setTimeout(() => {
                 form.reset();
-                btn.textContent = originalText;
-                btn.style.backgroundColor = "var(--accent)";
-                btn.style.color = "var(--bg-color)";
-                alert("Thank you! Your reservation request has been received. We will contact you to confirm.");
-            }, 2000);
+                submitButton.disabled = false;
+                submitButton.textContent = defaultLabel;
+                alert('Thank you for choosing Amaara. Your reservation request has been received.');
+            }, 1200);
         });
-    }
+    };
 
+    smoothAnchorScroll();
+    setupRevealOnScroll();
+    setupForm();
+    setupHeroSequence();
+    updateNavbar();
+
+    const year = document.getElementById('year');
+    if (year) {
+        year.textContent = String(new Date().getFullYear());
+    }
 });
