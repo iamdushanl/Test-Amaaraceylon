@@ -14,17 +14,80 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ==============================
-       PARALLAX EFFECT (Hero Background)
+       CANVAS IMAGE SEQUENCE (Hero Background)
     ============================== */
-    const parallaxImg = document.querySelector('.parallax-img');
-    
-    window.addEventListener('scroll', () => {
-        const scrollPosition = window.pageYOffset;
-        // Move background at 40% the scroll speed
-        if(parallaxImg && scrollPosition < window.innerHeight) {
-            parallaxImg.style.transform = `translateY(${scrollPosition * 0.4}px)`;
+    const canvas = document.getElementById('hero-canvas');
+    if (canvas) {
+        const context = canvas.getContext('2d');
+        const frameCount = 232;
+        
+        // Define canvas sizing based on window
+        const setupCanvas = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        setupCanvas();
+        window.addEventListener('resize', setupCanvas);
+
+        // Preload images
+        const images = [];
+        let imagesLoaded = 0;
+        
+        for (let i = 1; i <= frameCount; i++) {
+            const img = new Image();
+            // Pads the number with leading zeros (e.g., 001, 010, 100)
+            const paddedIndex = i.toString().padStart(3, '0');
+            img.src = `images/ezgif-frame-${paddedIndex}.jpg`;
+            
+            img.onload = () => {
+                imagesLoaded++;
+                // Draw first frame once loaded
+                if (imagesLoaded === 1) {
+                    renderFrame(0);
+                }
+            };
+            images.push({ loaded: false, img: img });
+            img.addEventListener('load', () => { images[i-1].loaded = true; });
         }
-    });
+
+        const renderFrame = (index) => {
+            if (images[index] && images[index].loaded) {
+                // Calculate scale to "cover" the canvas (like object-fit: cover)
+                const img = images[index].img;
+                const canvasRatio = canvas.width / canvas.height;
+                const imgRatio = img.width / img.height;
+                
+                let drawWidth, drawHeight, offsetX, offsetY;
+                
+                if (canvasRatio > imgRatio) {
+                    drawWidth = canvas.width;
+                    drawHeight = canvas.width / imgRatio;
+                    offsetX = 0;
+                    offsetY = (canvas.height - drawHeight) / 2;
+                } else {
+                    drawWidth = canvas.height * imgRatio;
+                    drawHeight = canvas.height;
+                    offsetX = (canvas.width - drawWidth) / 2;
+                    offsetY = 0;
+                }
+                
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+            }
+        };
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop;
+            // The max scroll required to reach the last frame (e.g., 1.5 * windowHeight)
+            const maxScrollTop = window.innerHeight * 1.5; 
+            
+            // Map scroll fraction to frame index
+            const scrollFraction = Math.min(scrollTop / maxScrollTop, 1);
+            const frameIndex = Math.floor(scrollFraction * (frameCount - 1));
+            
+            requestAnimationFrame(() => renderFrame(frameIndex));
+        });
+    }
 
     /* ==============================
        FADE-IN ON SCROLL (IntersectionObserver)
