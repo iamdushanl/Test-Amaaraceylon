@@ -40,83 +40,30 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const setupHeroSequence = () => {
-        const canvas = document.getElementById('hero-canvas');
-        if (!canvas) {
+        const frames = Array.from(document.querySelectorAll('.hero-frame'));
+        if (!frames.length) {
             return null;
         }
 
-        const context = canvas.getContext('2d');
-        const frameCount = 232;
-        const images = new Array(frameCount);
-        let currentFrame = 0;
-        let pendingFrame = 0;
+        const indicators = Array.from(document.querySelectorAll('.hero-indicator'));
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let activeFrame = 0;
+        let rotationTimer = null;
         let ticking = false;
 
-        const setCanvasSize = () => {
-            const ratio = Math.min(window.devicePixelRatio || 1, 2);
-            canvas.width = Math.floor(window.innerWidth * ratio);
-            canvas.height = Math.floor(window.innerHeight * ratio);
-            canvas.style.width = `${window.innerWidth}px`;
-            canvas.style.height = `${window.innerHeight}px`;
-            context.setTransform(ratio, 0, 0, ratio, 0, 0);
-            drawFrame(currentFrame);
-        };
+        const setFrame = (index) => {
+            const frameCount = frames.length;
+            activeFrame = ((index % frameCount) + frameCount) % frameCount;
 
-        const drawFrame = (index) => {
-            const image = images[index];
-            if (!image || !image.complete || image.naturalWidth === 0) {
-                return;
-            }
+            frames.forEach((frame, frameIndex) => {
+                frame.classList.toggle('is-active', frameIndex === activeFrame);
+            });
 
-            const canvasWidth = window.innerWidth;
-            const canvasHeight = window.innerHeight;
-            const canvasRatio = canvasWidth / canvasHeight;
-            const imageRatio = image.naturalWidth / image.naturalHeight;
-
-            let width = canvasWidth;
-            let height = canvasHeight;
-            let x = 0;
-            let y = 0;
-
-            if (canvasRatio > imageRatio) {
-                height = width / imageRatio;
-                y = (canvasHeight - height) * 0.5;
-            } else {
-                width = height * imageRatio;
-                x = (canvasWidth - width) * 0.5;
-            }
-
-            context.clearRect(0, 0, canvasWidth, canvasHeight);
-            context.drawImage(image, x, y, width, height);
-            currentFrame = index;
-        };
-
-        const preloadFrames = () => {
-            for (let i = 0; i < frameCount; i++) {
-                const frame = new Image();
-                const frameLabel = String(i + 1).padStart(3, '0');
-                frame.src = `images/ezgif-frame-${frameLabel}.jpg`;
-                frame.loading = 'eager';
-
-                frame.addEventListener('load', () => {
-                    if (i === 0) {
-                        drawFrame(0);
-                    }
-
-                    if (i === pendingFrame) {
-                        drawFrame(pendingFrame);
-                    }
-                });
-
-                images[i] = frame;
-            }
-        };
-
-        const updateFrameByScroll = () => {
-            const maxScroll = window.innerHeight * 1.4;
-            const fraction = Math.min(window.scrollY / maxScroll, 1);
-            pendingFrame = Math.round(fraction * (frameCount - 1));
-            drawFrame(pendingFrame);
+            indicators.forEach((indicator, indicatorIndex) => {
+                const isActive = indicatorIndex === activeFrame;
+                indicator.classList.toggle('is-active', isActive);
+                indicator.setAttribute('aria-pressed', String(isActive));
+            });
         };
 
         const updateParallax = () => {
@@ -128,6 +75,26 @@ document.addEventListener('DOMContentLoaded', () => {
             heroParallax.style.transform = `translate3d(0, ${offset}px, 0) scale(1.06)`;
         };
 
+        const stopRotation = () => {
+            if (rotationTimer === null) {
+                return;
+            }
+
+            window.clearInterval(rotationTimer);
+            rotationTimer = null;
+        };
+
+        const startRotation = () => {
+            stopRotation();
+            if (prefersReducedMotion || frames.length < 2) {
+                return;
+            }
+
+            rotationTimer = window.setInterval(() => {
+                setFrame(activeFrame + 1);
+            }, 4200);
+        };
+
         const onScroll = () => {
             if (ticking) {
                 return;
@@ -136,28 +103,39 @@ document.addEventListener('DOMContentLoaded', () => {
             ticking = true;
             requestAnimationFrame(() => {
                 updateNavbar();
-                updateFrameByScroll();
                 updateParallax();
                 ticking = false;
             });
         };
 
-        preloadFrames();
-        setCanvasSize();
-        updateFrameByScroll();
-        updateParallax();
+        indicators.forEach((indicator) => {
+            indicator.addEventListener('click', () => {
+                const target = Number.parseInt(indicator.dataset.frameTarget || '', 10);
+                if (Number.isNaN(target)) {
+                    return;
+                }
 
-        window.addEventListener('resize', () => {
-            setCanvasSize();
-            updateFrameByScroll();
+                setFrame(target);
+                startRotation();
+            });
         });
 
+        const hero = document.getElementById('hero');
+        if (hero) {
+            hero.addEventListener('mouseenter', stopRotation);
+            hero.addEventListener('mouseleave', startRotation);
+        }
+
+        setFrame(0);
+        startRotation();
+        updateParallax();
+
+        window.addEventListener('resize', updateParallax);
         window.addEventListener('scroll', onScroll, { passive: true });
 
         return {
             refresh: () => {
-                setCanvasSize();
-                updateFrameByScroll();
+                setFrame(activeFrame);
                 updateParallax();
             }
         };
