@@ -46,10 +46,10 @@
                 <a href="#reservations" class="btn btn-primary">Reserve a Table</a>
                 <a href="#menu" class="btn btn-outline">View Menu</a>
             </div>
-            <div class="hero-indicators reveal-text" role="group" aria-label="Hero frame selector">
-                <button class="hero-indicator is-active" type="button" data-frame-target="0" aria-label="Show hero frame 1" aria-pressed="true"></button>
-                <button class="hero-indicator" type="button" data-frame-target="1" aria-label="Show hero frame 2" aria-pressed="false"></button>
-                <button class="hero-indicator" type="button" data-frame-target="2" aria-label="Show hero frame 3" aria-pressed="false"></button>
+            <div class="hero-indicators reveal-text" role="tablist" aria-label="Hero frame selector">
+                <button class="hero-indicator is-active" type="button" role="tab" data-frame-target="0" aria-label="Show hero frame 1" aria-selected="true" tabindex="0"></button>
+                <button class="hero-indicator" type="button" role="tab" data-frame-target="1" aria-label="Show hero frame 2" aria-selected="false" tabindex="-1"></button>
+                <button class="hero-indicator" type="button" role="tab" data-frame-target="2" aria-label="Show hero frame 3" aria-selected="false" tabindex="-1"></button>
             </div>
         </div>
         <a class="scroll-cue" href="#about" aria-label="Scroll to Our Story">Scroll</a>

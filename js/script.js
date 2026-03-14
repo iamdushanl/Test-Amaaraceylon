@@ -62,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
             indicators.forEach((indicator, indicatorIndex) => {
                 const isActive = indicatorIndex === activeFrame;
                 indicator.classList.toggle('is-active', isActive);
-                indicator.setAttribute('aria-pressed', String(isActive));
+                indicator.setAttribute('aria-selected', String(isActive));
+                indicator.tabIndex = isActive ? 0 : -1;
             });
         };
 
@@ -118,12 +119,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 setFrame(target);
                 startRotation();
             });
+
+            indicator.addEventListener('keydown', (event) => {
+                const key = event.key;
+                let targetIndex = null;
+
+                if (key === 'ArrowRight' || key === 'ArrowDown') {
+                    targetIndex = activeFrame + 1;
+                } else if (key === 'ArrowLeft' || key === 'ArrowUp') {
+                    targetIndex = activeFrame - 1;
+                } else if (key === 'Home') {
+                    targetIndex = 0;
+                } else if (key === 'End') {
+                    targetIndex = frames.length - 1;
+                }
+
+                if (targetIndex === null) {
+                    return;
+                }
+
+                event.preventDefault();
+                setFrame(targetIndex);
+                startRotation();
+                indicators[activeFrame].focus();
+            });
         });
 
         const hero = document.getElementById('hero');
         if (hero) {
             hero.addEventListener('mouseenter', stopRotation);
             hero.addEventListener('mouseleave', startRotation);
+            hero.addEventListener('focusin', stopRotation);
+            hero.addEventListener('focusout', (event) => {
+                if (hero.contains(event.relatedTarget)) {
+                    return;
+                }
+
+                startRotation();
+            });
         }
 
         setFrame(0);
