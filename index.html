@@ -24,7 +24,17 @@
 
     <header class="hero" id="hero">
         <div class="hero-bg" id="heroParallax" aria-hidden="true">
-            <canvas id="hero-canvas"></canvas>
+            <div class="hero-frames">
+                <div class="hero-frame is-active" data-frame="0">
+                    <img src="images/ezgif-frame-018.jpg" alt="">
+                </div>
+                <div class="hero-frame" data-frame="1">
+                    <img src="images/ezgif-frame-104.jpg" alt="">
+                </div>
+                <div class="hero-frame" data-frame="2">
+                    <img src="images/ezgif-frame-212.jpg" alt="">
+                </div>
+            </div>
             <div class="hero-noise"></div>
             <div class="hero-overlay"></div>
         </div>
@@ -35,6 +45,11 @@
             <div class="hero-buttons reveal-text">
                 <a href="#reservations" class="btn btn-primary">Reserve a Table</a>
                 <a href="#menu" class="btn btn-outline">View Menu</a>
+            </div>
+            <div class="hero-indicators reveal-text" role="group" aria-label="Hero frame selector">
+                <button class="hero-indicator is-active" type="button" data-frame-target="0" aria-label="Show hero frame 1" aria-pressed="true"></button>
+                <button class="hero-indicator" type="button" data-frame-target="1" aria-label="Show hero frame 2" aria-pressed="false"></button>
+                <button class="hero-indicator" type="button" data-frame-target="2" aria-label="Show hero frame 3" aria-pressed="false"></button>
             </div>
         </div>
         <a class="scroll-cue" href="#about" aria-label="Scroll to Our Story">Scroll</a>
