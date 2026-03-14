@@ -679,6 +679,10 @@ a {
     animation-delay: 0.82s;
 }
 
+.hero .reveal-text:nth-child(5) {
+    animation-delay: 1s;
+}
+
 @keyframes heroLift {
     to {
         opacity: 1;
@@ -750,9 +754,17 @@ a {
         margin-bottom: 1.8rem;
     }
 
+    .hero-frame img {
+        filter: brightness(0.5) saturate(1.02) contrast(1.06);
+    }
+
     .hero-buttons {
         flex-direction: column;
         align-items: center;
+    }
+
+    .hero-indicators {
+        gap: 0.45rem;
     }
 
     .menu-columns {
@@ -781,6 +793,10 @@ a {
 
     .scroll-cue {
         bottom: 1.25rem;
+    }
+
+    .hero-indicator {
+        width: 42px;
     }
 }
 
