@@ -3,21 +3,55 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
+import { validateEmail } from "@/lib/auth-utils";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: { email?: string; password?: string } = {};
+
+    // Validate email
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!validateEmail(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Validate password
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
+
+    setErrors(newErrors);
+
+    // Only proceed if no errors
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
     setIsLoading(true);
+    setSuccessMessage("");
     
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      alert(`Login attempt: ${email}`);
+      setSuccessMessage(`Welcome back! Logging you in...`);
+      // Reset form after 2 seconds
+      setTimeout(() => {
+        setEmail("");
+        setPassword("");
+        setRememberMe(false);
+        setSuccessMessage("");
+      }, 2000);
     }, 1500);
   };
 
@@ -62,6 +96,32 @@ export default function LoginPage() {
           </p>
         </motion.div>
 
+        {/* Error Alert */}
+        {Object.keys(errors).length > 0 && (
+          <motion.div
+            variants={itemVariants}
+            className="bg-red-900/20 border border-red-500/50 rounded px-4 py-3 mb-6"
+          >
+            <p className="font-jost text-sm text-red-400">
+              Please fix the following errors:
+            </p>
+            <ul className="font-jost text-sm text-red-400 mt-2 ml-4 list-disc">
+              {errors.email && <li>{errors.email}</li>}
+              {errors.password && <li>{errors.password}</li>}
+            </ul>
+          </motion.div>
+        )}
+
+        {/* Success Alert */}
+        {successMessage && (
+          <motion.div
+            variants={itemVariants}
+            className="bg-green-900/20 border border-green-500/50 rounded px-4 py-3 mb-6"
+          >
+            <p className="font-jost text-sm text-green-400">{successMessage}</p>
+          </motion.div>
+        )}
+
         {/* Form Container */}
         <motion.form
           variants={containerVariants}
@@ -73,48 +133,78 @@ export default function LoginPage() {
         >
           {/* Email Input */}
           <motion.div variants={itemVariants}>
-            <label className="block font-jost text-xs uppercase tracking-[0.2em] text-white/70 mb-2">
+            <label htmlFor="email" className="block font-jost text-xs uppercase tracking-[0.2em] text-white/70 mb-2">
               Email Address
             </label>
             <input
+              id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors.email) setErrors({ ...errors, email: undefined });
+              }}
               placeholder="your@email.com"
-              required
-              className="w-full bg-[#111111] border border-[#c9a84c]/30 rounded-none px-4 py-3 font-jost text-sm text-white/90 placeholder:text-white/40 focus:outline-none focus:border-[#c9a84c]/70 focus:bg-[#1a1a1a] transition-all duration-300"
+              aria-label="Email address"
+              aria-describedby={errors.email ? "email-error" : undefined}
+              className={`w-full bg-[#111111] border rounded-none px-4 py-3 font-jost text-sm text-white/90 placeholder:text-white/40 focus:outline-none focus:bg-[#1a1a1a] transition-all duration-300 ${
+                errors.email
+                  ? "border-red-500/70 focus:border-red-500"
+                  : "border-[#c9a84c]/30 focus:border-[#c9a84c]/70"
+              }`}
             />
+            {errors.email && (
+              <p id="email-error" className="font-jost text-sm text-red-400 mt-1">
+                {errors.email}
+              </p>
+            )}
           </motion.div>
 
           {/* Password Input */}
           <motion.div variants={itemVariants}>
-            <label className="block font-jost text-xs uppercase tracking-[0.2em] text-white/70 mb-2">
+            <label htmlFor="password" className="block font-jost text-xs uppercase tracking-[0.2em] text-white/70 mb-2">
               Password
             </label>
             <input
+              id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (errors.password) setErrors({ ...errors, password: undefined });
+              }}
               placeholder="••••••••"
-              required
-              className="w-full bg-[#111111] border border-[#c9a84c]/30 rounded-none px-4 py-3 font-jost text-sm text-white/90 placeholder:text-white/40 focus:outline-none focus:border-[#c9a84c]/70 focus:bg-[#1a1a1a] transition-all duration-300"
+              aria-label="Password"
+              aria-describedby={errors.password ? "password-error" : undefined}
+              className={`w-full bg-[#111111] border rounded-none px-4 py-3 font-jost text-sm text-white/90 placeholder:text-white/40 focus:outline-none focus:bg-[#1a1a1a] transition-all duration-300 ${
+                errors.password
+                  ? "border-red-500/70 focus:border-red-500"
+                  : "border-[#c9a84c]/30 focus:border-[#c9a84c]/70"
+              }`}
             />
+            {errors.password && (
+              <p id="password-error" className="font-jost text-sm text-red-400 mt-1">
+                {errors.password}
+              </p>
+            )}
           </motion.div>
 
           {/* Remember Me & Forgot Password */}
           <motion.div variants={itemVariants} className="flex items-center justify-between">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
+                id="remember-me"
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
+                aria-label="Remember me on this device"
                 className="w-4 h-4 bg-[#111111] border border-[#c9a84c]/30 rounded-sm cursor-pointer accent-[#c9a84c]"
               />
               <span className="font-jost text-sm text-white/60 hover:text-white/80 transition-colors">
                 Remember me
               </span>
             </label>
-            <Link href="/forgot-password" className="font-jost text-sm text-[#c9a84c] hover:text-[#d9b85c] transition-colors">
+            <Link href="/forgot-password" className="font-jost text-sm text-[#c9a84c] hover:text-[#d9b85c] transition-colors" aria-label="Forgot password">
               Forgot password?
             </Link>
           </motion.div>
@@ -123,7 +213,8 @@ export default function LoginPage() {
           <motion.button
             variants={itemVariants}
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || Object.keys(errors).length > 0}
+            aria-label="Sign in to your account"
             className="w-full bg-[#c9a84c] px-6 py-3 font-jost text-sm font-semibold uppercase tracking-[0.22em] text-[#050505] transition-all duration-300 hover:shadow-lg hover:shadow-[#c9a84c]/20 disabled:opacity-70 disabled:cursor-not-allowed mt-8"
           >
             {isLoading ? (
@@ -154,10 +245,18 @@ export default function LoginPage() {
 
         {/* Social Login */}
         <motion.div variants={itemVariants} className="space-y-3">
-          <button className="w-full border border-[#c9a84c]/30 rounded-none px-6 py-3 font-jost text-sm uppercase tracking-[0.2em] text-white/70 hover:border-[#c9a84c]/70 hover:text-[#c9a84c] transition-all duration-300">
+          <button
+            type="button"
+            aria-label="Continue with Google"
+            className="w-full border border-[#c9a84c]/30 rounded-none px-6 py-3 font-jost text-sm uppercase tracking-[0.2em] text-white/70 hover:border-[#c9a84c]/70 hover:text-[#c9a84c] transition-all duration-300"
+          >
             Continue with Google
           </button>
-          <button className="w-full border border-[#c9a84c]/30 rounded-none px-6 py-3 font-jost text-sm uppercase tracking-[0.2em] text-white/70 hover:border-[#c9a84c]/70 hover:text-[#c9a84c] transition-all duration-300">
+          <button
+            type="button"
+            aria-label="Continue with Apple"
+            className="w-full border border-[#c9a84c]/30 rounded-none px-6 py-3 font-jost text-sm uppercase tracking-[0.2em] text-white/70 hover:border-[#c9a84c]/70 hover:text-[#c9a84c] transition-all duration-300"
+          >
             Continue with Apple
           </button>
         </motion.div>
