@@ -42,3 +42,45 @@ export const AUTH_ERROR_MESSAGES = {
   SESSION_EXPIRED: "Your session has expired. Please log in again",
   NETWORK_ERROR: "Network error. Please try again.",
 } as const;
+
+/**
+ * Validate required environment variables at build time
+ * Throws error if critical env vars are missing
+ */
+export function validateAuthEnvironment(): void {
+  const requiredEnvVars = ["NEXT_PUBLIC_API_BASE_URL"];
+  const missingVars = requiredEnvVars.filter(
+    (envVar) => !process.env[envVar]
+  );
+
+  if (missingVars.length > 0) {
+    throw new Error(
+      `Missing required environment variables: ${missingVars.join(", ")}\n` +
+      `Please check your .env.local file.`
+    );
+  }
+}
+
+/**
+ * Get the API base URL from environment
+ * Validates that the URL is properly formatted
+ */
+export function getApiBaseUrl(): string {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  if (!baseUrl) {
+    throw new Error("NEXT_PUBLIC_API_BASE_URL is not configured");
+  }
+
+  try {
+    new URL(baseUrl);
+  } catch {
+    throw new Error(
+      `Invalid NEXT_PUBLIC_API_BASE_URL format: ${baseUrl}\n` +
+      `Expected a valid URL like http://localhost:3000 or https://api.example.com`
+    );
+  }
+
+  return baseUrl.replace(/\/$/, ""); // Remove trailing slash
+}
+
