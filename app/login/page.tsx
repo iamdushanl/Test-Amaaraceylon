@@ -4,18 +4,19 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 import { validateEmail } from "@/lib/auth-utils";
+import { AUTH_ENDPOINTS } from "@/lib/auth-config";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; api?: string }>({});
   const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors: { email?: string; password?: string } = {};
+    const newErrors: { email?: string; password?: string; api?: string } = {};
 
     // Validate email
     if (!email.trim()) {
@@ -41,18 +42,61 @@ export default function LoginPage() {
     setIsLoading(true);
     setSuccessMessage("");
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setSuccessMessage(`Welcome back! Logging you in...`);
-      // Reset form after 2 seconds
+    try {
+      // Make actual API call
+      const response = await fetch(AUTH_ENDPOINTS.LOGIN, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+          rememberMe,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrors({
+          api: data.error || "Login failed. Please try again.",
+        });
+        return;
+      }
+
+      // Store token and user data
+      if (data.accessToken) {
+        import("@/lib/auth-utils").then(({ setAuthToken, setUserId, setRefreshToken }) => {
+          setAuthToken(data.accessToken);
+          if (data.refreshToken) {
+            setRefreshToken(data.refreshToken);
+          }
+          if (data.user?.id) {
+            setUserId(data.user.id);
+          }
+        });
+      }
+
+      setSuccessMessage(`Welcome back, ${data.user?.name || "User"}! Redirecting...`);
+      
+      // Reset form and redirect after 2 seconds
       setTimeout(() => {
         setEmail("");
         setPassword("");
         setRememberMe(false);
         setSuccessMessage("");
+        // Redirect to dashboard or home
+        window.location.href = "/";
       }, 2000);
-    }, 1500);
+    } catch (error) {
+      setErrors({
+        api: "Network error. Please check your connection and try again.",
+      });
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const containerVariants = {
