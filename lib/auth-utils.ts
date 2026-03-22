@@ -31,6 +31,53 @@ export function clearAuthTokens(): void {
 }
 
 /**
+ * Logout user and clear all authentication data
+ */
+export async function logout(): Promise<void> {
+  try {
+    // Call logout endpoint if available
+    const token = getAuthToken();
+    if (token) {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      } catch (error) {
+        // Silently fail - proceed with local logout
+        console.debug("Logout API call failed, clearing local tokens");
+      }
+    }
+  } finally {
+    // Always clear local tokens
+    clearAuthTokens();
+  }
+}
+
+/**
+ * Restore authentication session (e.g., on page reload)
+ */
+export function restoreSession(): { isAuthenticated: boolean; expired: boolean } {
+  const token = getAuthToken();
+  
+  if (!token) {
+    return { isAuthenticated: false, expired: false };
+  }
+  
+  const expired = isTokenExpired();
+  
+  if (expired) {
+    clearAuthTokens();
+    return { isAuthenticated: false, expired: true };
+  }
+  
+  return { isAuthenticated: true, expired: false };
+}
+
+/**
  * Store refresh token
  */
 export function setRefreshToken(token: string): void {
