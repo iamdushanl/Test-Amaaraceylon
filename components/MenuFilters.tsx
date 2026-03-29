@@ -40,12 +40,11 @@ const MenuFilters: FC<MenuFiltersProps> = ({
                 min="0"
                 max={maxPrice}
                 value={priceRange[0]}
-                onChange={(e) =>
-                  onPriceChange([
-                    parseInt(e.target.value),
-                    priceRange[1],
-                  ])
-                }
+                onChange={(e) => {
+                  const newMin = parseInt(e.target.value);
+                  const newMax = Math.max(newMin, priceRange[1]);
+                  onPriceChange([newMin, newMax]);
+                }}
                 className="w-full accent-amber-500"
               />
             </div>
@@ -55,12 +54,11 @@ const MenuFilters: FC<MenuFiltersProps> = ({
                 min="0"
                 max={maxPrice}
                 value={priceRange[1]}
-                onChange={(e) =>
-                  onPriceChange([
-                    priceRange[0],
-                    parseInt(e.target.value),
-                  ])
-                }
+                onChange={(e) => {
+                  const newMax = parseInt(e.target.value);
+                  const newMin = Math.min(newMax, priceRange[0]);
+                  onPriceChange([newMin, newMax]);
+                }}
                 className="w-full accent-amber-500"
               />
             </div>
