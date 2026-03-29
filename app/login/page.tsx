@@ -14,6 +14,20 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<{ email?: string; password?: string; api?: string }>({});
   const [successMessage, setSuccessMessage] = useState("");
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (errors.email) {
+      setErrors((prev) => ({ ...prev, email: undefined }));
+    }
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (errors.password) {
+      setErrors((prev) => ({ ...prev, password: undefined }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: { email?: string; password?: string; api?: string } = {};
@@ -184,10 +198,7 @@ export default function LoginPage() {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (errors.email) setErrors({ ...errors, email: undefined });
-              }}
+              onChange={handleEmailChange}
               placeholder="your@email.com"
               aria-label="Email address"
               aria-describedby={errors.email ? "email-error" : undefined}
@@ -213,10 +224,7 @@ export default function LoginPage() {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (errors.password) setErrors({ ...errors, password: undefined });
-              }}
+              onChange={handlePasswordChange}
               placeholder="••••••••"
               aria-label="Password"
               aria-describedby={errors.password ? "password-error" : undefined}
