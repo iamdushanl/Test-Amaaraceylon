@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 import { validateEmail, validatePassword } from "@/lib/auth-utils";
+import { AUTH_ENDPOINTS } from "@/lib/auth-config";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ export default function RegisterPage() {
     password?: string;
     confirmPassword?: string;
     terms?: string;
+    api?: string;
   }>({});
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -82,17 +84,61 @@ export default function RegisterPage() {
     setIsLoading(true);
     setSuccessMessage("");
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      // Make actual API call
+      const response = await fetch(AUTH_ENDPOINTS.REGISTER, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrors({
+          api: data.error || "Registration failed. Please try again.",
+        });
+        return;
+      }
+
+      // Store token and user data
+      if (data.accessToken) {
+        import("@/lib/auth-utils").then(({ setAuthToken, setUserId, setRefreshToken }) => {
+          setAuthToken(data.accessToken);
+          if (data.refreshToken) {
+            setRefreshToken(data.refreshToken);
+          }
+          if (data.user?.id) {
+            setUserId(data.user.id);
+          }
+        });
+      }
+
       setSuccessMessage(`Account created successfully! Redirecting...`);
-      // Reset form after 2 seconds
+      
+      // Reset form and redirect after 2 seconds
       setTimeout(() => {
         setFormData({ name: "", email: "", password: "", confirmPassword: "" });
         setAgreedToTerms(false);
         setSuccessMessage("");
+        // Redirect to dashboard or home
+        window.location.href = "/";
       }, 2000);
-    }, 1500);
+    } catch (error) {
+      setErrors({
+        api: "Network error. Please check your connection and try again.",
+      });
+      console.error("Registration error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const containerVariants = {
@@ -288,6 +334,9 @@ export default function RegisterPage() {
             )}
             {!errors.confirmPassword && formData.password && formData.confirmPassword === formData.password && (
               <p className="font-jost text-sm text-green-400 mt-1">✓ Passwords match</p>
+            )}
+            {!errors.confirmPassword && formData.password && formData.confirmPassword && formData.confirmPassword !== formData.password && (
+              <p className="font-jost text-sm text-orange-400 mt-1">✗ Passwords do not match</p>
             )}
           </motion.div>
 
