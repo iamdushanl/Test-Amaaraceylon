@@ -3,11 +3,28 @@ import { useState, useCallback } from "react";
 type FormErrors = Record<string, string>;
 type ValidationFunction<T> = (values: T) => Promise<FormErrors | null> | FormErrors | null;
 
+interface UseFormReturn<T extends Record<string, any>> {
+  values: T;
+  errors: FormErrors;
+  isLoading: boolean;
+  isSubmitted: boolean;
+  touched: Record<string, boolean>;
+  setValues: (values: T | ((prev: T) => T)) => void;
+  setErrors: (errors: FormErrors | ((prev: FormErrors) => FormErrors)) => void;
+  setFieldError: (fieldName: string, error: string) => void;
+  clearFieldError: (fieldName: string) => void;
+  setFieldValue: (fieldName: string, value: any) => void;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  handleBlur: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  handleSubmit: (e: React.FormEvent) => Promise<void>;
+  resetForm: () => void;
+}
+
 export function useForm<T extends Record<string, any>>(
   initialValues: T,
   onSubmit: (values: T) => Promise<void> | void,
   validate?: ValidationFunction<T>,
-) {
+): UseFormReturn<T> {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
