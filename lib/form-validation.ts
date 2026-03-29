@@ -11,17 +11,18 @@ export interface ValidationResult {
 }
 
 /**
- * Phone number validation (US format)
- * Accepts formats: (123) 456-7890, 123-456-7890, 1234567890
+ * Phone number validation (supports US and international formats)
+ * Accepts formats: +1 (123) 456-7890, +44 20 1234 5678, 123-456-7890, etc.
  */
 export function validatePhone(phone: string): ValidationResult {
-  const phoneRegex = /^(\+1)?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$/;
+  const cleanPhone = phone.replace(/[\s\-().]/g, "");
+  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
   
   if (!phone.trim()) {
     return { isValid: false, error: "Phone number is required" };
   }
   
-  if (!phoneRegex.test(phone.replace(/\s/g, ""))) {
+  if (!phoneRegex.test(cleanPhone)) {
     return { isValid: false, error: "Please enter a valid phone number" };
   }
   
