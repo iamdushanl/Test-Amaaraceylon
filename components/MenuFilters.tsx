@@ -20,6 +20,8 @@ const MenuFilters: FC<MenuFiltersProps> = ({
   onSortChange,
   maxPrice = 60,
 }) => {
+  // Validate maxPrice to ensure it's a positive number
+  const validatedMaxPrice = Math.max(1, Number(maxPrice) || 60);
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -38,7 +40,7 @@ const MenuFilters: FC<MenuFiltersProps> = ({
               <input
                 type="range"
                 min="0"
-                max={maxPrice}
+                max={validatedMaxPrice}
                 value={priceRange[0]}
                 onChange={(e) => {
                   const newMin = parseInt(e.target.value);
@@ -52,7 +54,7 @@ const MenuFilters: FC<MenuFiltersProps> = ({
               <input
                 type="range"
                 min="0"
-                max={maxPrice}
+                max={validatedMaxPrice}
                 value={priceRange[1]}
                 onChange={(e) => {
                   const newMax = parseInt(e.target.value);
