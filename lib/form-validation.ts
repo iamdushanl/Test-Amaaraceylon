@@ -31,9 +31,10 @@ export function validatePhone(phone: string): ValidationResult {
 
 /**
  * Reservation date validation
- * Validates that date is in the future and is a valid date
+ * Validates that date is in the future or today, and is a valid date
+ * For same-day reservations, also checks if time is valid
  */
-export function validateReservationDate(dateString: string): ValidationResult {
+export function validateReservationDate(dateString: string, timeString?: string): ValidationResult {
   if (!dateString.trim()) {
     return { isValid: false, error: "Date is required" };
   }
@@ -48,6 +49,18 @@ export function validateReservationDate(dateString: string): ValidationResult {
 
   if (date < today) {
     return { isValid: false, error: "Please select a future date" };
+  }
+
+  // If same day and time provided, validate time is not in the past
+  if (date.getTime() === today.getTime() && timeString) {
+    const [hours, minutes] = timeString.split(":").map(Number);
+    const now = new Date();
+    const requestedTime = new Date();
+    requestedTime.setHours(hours, minutes, 0);
+
+    if (requestedTime <= now) {
+      return { isValid: false, error: "Please select a future time" };
+    }
   }
 
   return { isValid: true };
