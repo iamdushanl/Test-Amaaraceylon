@@ -39,12 +39,17 @@ const MenuSearch: FC<MenuSearchProps> = ({
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full pl-12 pr-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+          className="w-full pl-12 pr-10 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+          aria-label="Search"
+          aria-describedby={searchTerm ? "clear-search-btn" : undefined}
         />
         {searchTerm && (
           <button
+            id="clear-search-btn"
             onClick={() => onSearchChange("")}
-            className="absolute right-4 top-3.5 text-gray-400 hover:text-white transition-colors"
+            type="button"
+            aria-label="Clear search"
+            className="absolute right-4 top-3.5 text-gray-400 hover:text-white hover:bg-gray-700/50 p-1 rounded transition-colors"
           >
             ✕
           </button>
