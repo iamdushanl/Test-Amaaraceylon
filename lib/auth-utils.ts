@@ -179,9 +179,9 @@ export function validatePassword(password: string): {
 }
 
 /**
- * Validate email format
+ * Validate email format - RFC 5322 simplified
  */
 export function validateEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  return emailRegex.test(email) && email.length <= 254;
 }
